@@ -21,6 +21,8 @@ class proivder_powerdog(provider.provider):
 
     # Rate limit
     def load_powerdog_strings(self):
+        """[summary]
+        """
         powerdogs = self.client.getPowerDogs(self.apikey)['powerdogs']
         self.powerdog_ids = []
         self.powerdog_inv = {}
@@ -39,6 +41,14 @@ class proivder_powerdog(provider.provider):
 
     # Rate limit
     def get_powerdog_data(self, id):
+        """[summary]
+
+        Arguments:
+            id {[type]} -- [description]
+
+        Returns:
+            [type] -- [description]
+        """
         powerdog_series = pd.Series(index=self.time_range, name=id)
         for inverter_id, n_string in zip(self.powerdog_inv[id], self.powerdog_snum[id]):
             for string_id in range(1, n_string + 1):
@@ -49,6 +59,14 @@ class proivder_powerdog(provider.provider):
         return powerdog_series
 
     def process_string_data(self, string_data):
+        """[summary]
+
+        Arguments:
+            string_data {[type]} -- [description]
+
+        Returns:
+            [type] -- [description]
+        """
         string_data = string_data['datasets']
         df = pd.DataFrame(string_data)
         df = df.T

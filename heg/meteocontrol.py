@@ -18,9 +18,11 @@ class proivder_meteocontrol(provider.provider):
         link = "{url}?apiKey={ak}&type=day&date={y}-{m}-{d}"
         link = link.format(url=METEOCONTROL_API_URL, ak=self.apikey, y=year, m=month, d=day)
         response = requests.get(link)
-        data = response.json()['chartData']['data']
-        df = pd.DataFrame(data)
+        response_json = response.json()['chartData']['data']
+        df = pd.DataFrame(response_json)
         df = df.set_index(0)
         df.index = df.index / 1000
         df = self._reindex_day_data(df)
-        return df
+        data = df[1]
+        data.name = 'meteocontrol'
+        return data
