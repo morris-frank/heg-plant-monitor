@@ -29,9 +29,10 @@ class Provider(object):
         return df
 
     def time_range(self, date):
-        stop = date + datetime.timedelta(days=1) - \
+        start = datetime.datetime(date.year, date.month, date.day)
+        stop = start + datetime.timedelta(days=1) - \
             datetime.timedelta(seconds=1)
-        return pd.date_range(start=date, end=stop, freq='{}min'.format(self.freq))
+        return pd.date_range(start=start, end=stop, freq='{}min'.format(self.freq))
 
     def get_day_data(self, date):
         """Get the data for this plant for one specific day.
@@ -44,12 +45,13 @@ class Provider(object):
         data = pd.Series(self.time_range)
         return data
 
-    def save_day_data(self, date):
-        assert(isinstance(date, datetime.date))
-        logging.debug(
-            'Getting day data for {name} on the {date}'.format(name=self.name, date=date))
-        data = self.get_day_data(date)
-        self.save_data(data)
+    def save_path(self, date):
+        name_slug = utils.slugify(self.name)
+        dir_path = 'export/{name}/{year}/{month}/'.format(
+            name=name_slug, year=date.year, month=date.month)
+        filename = '{year}-{month}-{day}_{name}.csv'.format(
+            name=name_slug, year=date.year, month=date.month, day=date.day)
+        return '{}{}'.format(dir_path, filename)
 
     def save_range_data(self, start_date, stop_date, overwrite=False):
         logging.debug('Starting saving data for {name} between {start} and {end}.'.format(
@@ -58,12 +60,12 @@ class Provider(object):
             if overwrite or not os.path.exists(self.save_path(date)):
                 self.save_day_data(date)
 
-    def save_path(self, date):
-        dir_path = 'export/{name}/{year}/{month}/'.format(
-            name=self.name, year=date.year, month=date.month)
-        filename = '{year}-{month}-{day}_{name}.csv'.format(
-            name=self.name, year=date.year, month=date.month, day=date.day)
-        return '{}{}'.format(dir_path, filename)
+    def save_day_data(self, date):
+        assert(isinstance(date, datetime.date))
+        logging.debug(
+            'Getting day data for {name} on the {date}'.format(name=self.name, date=date))
+        data = self.get_day_data(date)
+        self.save_data(data)
 
     def save_data(self, data):
         save_path = self.save_path(data.index[0])

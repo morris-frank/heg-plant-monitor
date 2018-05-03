@@ -71,4 +71,6 @@ class Collector(object):
         pass
 
     def _provider_pvscreen(self, project, plant):
-        pass
+        location = plant['username']
+        name = plant['name']
+        return heg.pvscreen.ProviderPVScreen(location, name=name)

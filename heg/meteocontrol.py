@@ -8,7 +8,7 @@ METEOCONTROL_API_URL = "http://ws.meteocontrol.de/api/sites/ZDT8R/data/energygen
 # How many minutes between reported data?
 METEOCONTROL_FREQ = 15
 # How many calls per minute?
-METEOCONTROL_ALLOWANCE = 20
+METEOCONTROL_ALLOWANCE = 40
 
 class ProviderMeteoControl(provider.Provider):
     def __init__(self, username, apikey, freq=METEOCONTROL_FREQ, **kwargs):
