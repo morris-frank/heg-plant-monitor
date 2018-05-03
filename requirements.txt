@@ -1,8 +1,10 @@
-
-PyYAML>=3.12
-requests>=2.18.4
+matplotlib>=2.2.2
 numpy>=1.14.2
 pandas>=0.22.0
+pychalk>=2.0.0
+PyYAML>=3.12
+ratelimit>=2.2.0
+requests>=2.18.4
 seaborn>=0.8.1
-matplotlib>=2.2.2
+yamale>=1.7.0
 zeep>=2.5.0

@@ -1,12 +1,14 @@
 from heg import utils
 import pandas as pd
 import datetime
+import os
+import logging
 
 
-class provider(object):
-    def __init__(self, freq):
+class Provider(object):
+    def __init__(self, freq, name='unnamed'):
         self.freq = freq
-        pass
+        self.name = name
 
     def _reindex_day_data(self, df):
         """Normalize the data for a the set time_range.
@@ -18,52 +20,53 @@ class provider(object):
             pd.DataFrame | pd.Series -- The normalized DataFrame or Series
         """
         df.index = pd.to_datetime(df.index, unit='s')
-        df = df.reindex(self.time_range, method='nearest',
+        date = datetime.date(
+            df.index[0].year, df.index[0].month, df.index[0].day)
+        df = df.reindex(self.time_range(date), method='nearest',
                         tolerance='{}min'.format(self.freq))
         df = df.sort_index()
         df = df.fillna(0)
         return df
 
-    def _day_ts(self, year, month, day):
-        """Set the timestamps and time range for a specific day. 
+    def time_range(self, date):
+        stop = date + datetime.timedelta(days=1) - \
+            datetime.timedelta(seconds=1)
+        return pd.date_range(start=date, end=stop, freq='{}min'.format(self.freq))
 
-        Arguments:
-            year {int} -- The desired days year [yyyy]
-            month {int} -- The desired days month [mm]
-            day {int} -- The desired days day number [dd]
-        """
-        self.start_ts = int(datetime.datetime(
-            year, month, day, tzinfo=datetime.timezone.utc).timestamp())
-        self.end_ts = self.start_ts + 86400 - 1
-        self.time_range = pd.date_range(start=pd.to_datetime(self.start_ts, unit='s'),
-                                        end=pd.to_datetime(
-                                            self.end_ts, unit='s'),
-                                        freq='{}min'.format(self.freq))
-
-    def get_day_data(self, year, month, day):
+    def get_day_data(self, date):
         """Get the data for this plant for one specific day.
 
         Arguments:
-            year {int} -- The desired days year [yyyy]
-            month {int} -- The desired days month [mm]
-            day {int} -- The desired days day number [dd]
+            date {datetime.date} -- The desired day
 
             pd.Series | list(pd.Series) -- A list of Series of data or just a single one
         """
-        self._day_ts(year, month, day)
         data = pd.Series(self.time_range)
         return data
 
-    def save_day_data(self, year, month, day):
-        """Get the data for this plant for one specific day and save it.
+    def save_day_data(self, date):
+        assert(isinstance(date, datetime.date))
+        logging.debug(
+            'Getting day data for {name} on the {date}'.format(name=self.name, date=date))
+        data = self.get_day_data(date)
+        self.save_data(data)
 
-        Arguments:
-            year {int} -- The desired days year [yyyy]
-            month {int} -- The desired days month [mm]
-            day {int} -- The desired days day number [dd]
-        """
-        data = self.get_day_data(year, month, day)
-        if type(data) == list:
-            pass
-        else:
-            pass
+    def save_range_data(self, start_date, stop_date, overwrite=False):
+        logging.debug('Starting saving data for {name} between {start} and {end}.'.format(
+            name=self.name, start=start_date, end=stop_date))
+        for date in utils.daterange(start_date, stop_date):
+            if overwrite or not os.path.exists(self.save_path(date)):
+                self.save_day_data(date)
+
+    def save_path(self, date):
+        dir_path = 'export/{name}/{year}/{month}/'.format(
+            name=self.name, year=date.year, month=date.month)
+        filename = '{year}-{month}-{day}_{name}.csv'.format(
+            name=self.name, year=date.year, month=date.month, day=date.day)
+        return '{}{}'.format(dir_path, filename)
+
+    def save_data(self, data):
+        save_path = self.save_path(data.index[0])
+        logging.debug('Saving {fp}'.format(fp=save_path))
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        data.to_csv(save_path)

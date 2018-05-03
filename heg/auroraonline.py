@@ -10,8 +10,9 @@ AURORAONLINE_API_URL = "https://auroraonline.abbsolarinverters.com/abb/"
 AURORAONLINE_FREQ = 10
 
 
-class proivder_auroraonline(provider.provider):
-    def __init__(self, username, password, freq=AURORAONLINE_FREQ):
+class ProviderAuroraOnline(provider.Provider):
+    def __init__(self, username, password, freq=AURORAONLINE_FREQ, **kwargs):
+        super().__init__(freq, **kwargs)
         self.username = username
         self.password = password
         self.freq = freq
@@ -44,6 +45,5 @@ class proivder_auroraonline(provider.provider):
             datalogger_url, allow_redirects=False, verify=False)
         return session
 
-    def get_day_data(self, year, month, day):
-        self._day_ts(year, month, day)
-        return df
+    def get_day_data(self, date):
+        pass

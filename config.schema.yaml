@@ -1,0 +1,14 @@
+projects: list(include('project'))
+---
+project:
+  name: str()
+  provider: str()
+  apikey: str()
+  plants: list(include('plant'))
+
+plant:
+  name: str()
+  username: str()
+  start: day()
+  size: num()
+  compensation: num()
