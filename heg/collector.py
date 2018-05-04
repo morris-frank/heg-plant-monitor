@@ -21,7 +21,7 @@ class Collector(object):
 
     def parse_arguments(self, arguments):
         """Parses cli options/arguments given as a list. 
-        
+
         Arguments:
             arguments {list} -- The cli options/list
         """
@@ -40,10 +40,10 @@ class Collector(object):
 
     def load_config(self, filepath, schemapath='config.schema.yaml'):
         """Load the config file and validate against the schema
-        
+
         Arguments:
             filepath {str} -- The path to the config file
-        
+
         Keyword Arguments:
             schemapath {str} -- The path to the schema file (default: {'config.schema.yaml'})
         """
@@ -58,12 +58,13 @@ class Collector(object):
         if 'projects' not in self.config:
             logging.warn('No projects listed in config.')
         for project in self.config['projects']:
-            _project_process = mp.Process(target=self.collect_project, args=(project,))
+            _project_process = mp.Process(
+                target=self.collect_project, args=(project,))
             _project_process.start()
 
     def collect_project(self, project):
         """Collect and save all the data for one project
-        
+
         Arguments:
             project {dict} -- The config dict for the project
         """

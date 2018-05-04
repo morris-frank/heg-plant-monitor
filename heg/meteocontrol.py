@@ -10,13 +10,14 @@ METEOCONTROL_FREQ = 15
 # How many calls per minute?
 METEOCONTROL_ALLOWANCE = 40
 
+
 class ProviderMeteoControl(provider.Provider):
     def __init__(self, username, apikey, freq=METEOCONTROL_FREQ, **kwargs):
         """
         Arguments:
             username {string} -- The login username
             apikey {string} -- The apikey
-        
+
         Keyword Arguments:
             freq {int} -- Frequency of datapoints (default: {METEOCONTROL_FREQ})
             name {string} -- The name of this project
@@ -29,10 +30,10 @@ class ProviderMeteoControl(provider.Provider):
     @limits(calls=METEOCONTROL_ALLOWANCE, period=60)
     def get_day_data(self, date):
         """Returns the energy data for one day
-        
+
         Arguments:
             date {datetime.date} -- The date to get data for
-        
+
         Returns:
             pd.Series -- The Energy data in a Series
         """
