@@ -11,11 +11,20 @@ DEFAULT_CONFIG = 'config.yaml'
 
 class Collector(object):
     def __init__(self, arguments=[]):
+        """
+        Keyword Arguments:
+            arguments {list} -- The cli options as a list (default: {[]})
+        """
         self.parse_arguments(arguments)
         self.load_config(self.args.config)
         self.yesterday = datetime.date.today() - datetime.timedelta(days=1)
 
     def parse_arguments(self, arguments):
+        """Parses cli options/arguments given as a list. 
+        
+        Arguments:
+            arguments {list} -- The cli options/list
+        """
         parser = argparse.ArgumentParser(description='HEG data collector')
         parser.add_argument(
             '-v', '--verbose', action='store_true', help='Make output more verbose.')
@@ -30,12 +39,22 @@ class Collector(object):
             logging.basicConfig(level=logging.DEBUG)
 
     def load_config(self, filepath, schemapath='config.schema.yaml'):
+        """Load the config file and validate against the schema
+        
+        Arguments:
+            filepath {str} -- The path to the config file
+        
+        Keyword Arguments:
+            schemapath {str} -- The path to the schema file (default: {'config.schema.yaml'})
+        """
         schema = yamale.make_schema(schemapath)
         data = yamale.make_data(filepath)
         data = yamale.validate(schema, data)
         self.config = data[0]
 
     def collect(self):
+        """Collect and save ALL THA DATA FOR ALL THA PROJECTS.
+        """
         if 'projects' not in self.config:
             logging.warn('No projects listed in config.')
         for project in self.config['projects']:
@@ -43,6 +62,11 @@ class Collector(object):
             _project_process.start()
 
     def collect_project(self, project):
+        """Collect and save all the data for one project
+        
+        Arguments:
+            project {dict} -- The config dict for the project
+        """
         collector_functions = {
             'auroraonline': self._provider_auroraonline,
             'meteocontrol': self._provider_meteocontrol,

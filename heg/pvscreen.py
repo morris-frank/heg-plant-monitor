@@ -14,29 +14,35 @@ PVSCREEN_ALLOWANCE = 60
 
 class ProviderPVScreen(provider.Provider):
     def __init__(self, location, freq=PVSCREEEN_FREQ, **kwargs):
+        """
+        Arguments:
+            location {string} -- The Location (ID)
+        
+        Keyword Arguments:
+            freq {int} -- Frequency of datapoints (default: {PVSCREEEN_FREQ})
+            name {string} -- The name of this project
+        """
         super().__init__(freq, **kwargs)
         self.client = zeep.Client(wsdl=PVSCREEN_API_URL)
         self.location = location
 
-    def _fetch_data(self, location, date):
-        """Fetch the generated energy for a plant for one day.
-
-        Arguments:
-            location {string} -- The location ID (name)
-            date {string} -- The yyyy-mm-dd fromatted date
-
-        Returns:
-            [float] -- The Energy for this date/location
-        """
-        response = self.client.service.getDailyEnergyData(
-            locationNames=location, startDate=date, endDate=date)
-        return response[0]['values'][0]['energy']
-
     @sleep_and_retry
     @limits(calls=PVSCREEN_ALLOWANCE, period=60)
     def get_day_data(self, date):
-        date_format = '{:04d}-{:02d}-{:02d}'.format(
+        """Returns the energy data for one day
+        
+        Arguments:
+            date {datetime.date} -- The date to get data for
+        
+        Returns:
+            pd.Series -- The Energy data in a Series
+        """
+        date_str = '{:04d}-{:02d}-{:02d}'.format(
             date.year, date.month, date.day)
+            
+        client_response = self.client.service.getDailyEnergyData(
+            locationNames=self.location, startDate=date_str, endDate=date_str)
+            
         s = pd.Series(index=self.time_range(date), name=self.location)
-        s[0] = self._fetch_data(self.location, date_format)
+        s[0] = client_response[0]['values'][0]['energy']
         return s

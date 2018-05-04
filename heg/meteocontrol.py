@@ -12,6 +12,15 @@ METEOCONTROL_ALLOWANCE = 40
 
 class ProviderMeteoControl(provider.Provider):
     def __init__(self, username, apikey, freq=METEOCONTROL_FREQ, **kwargs):
+        """
+        Arguments:
+            username {string} -- The login username
+            apikey {string} -- The apikey
+        
+        Keyword Arguments:
+            freq {int} -- Frequency of datapoints (default: {METEOCONTROL_FREQ})
+            name {string} -- The name of this project
+        """
         super().__init__(freq, **kwargs)
         self.username = username
         self.apikey = apikey
@@ -19,6 +28,14 @@ class ProviderMeteoControl(provider.Provider):
     @sleep_and_retry
     @limits(calls=METEOCONTROL_ALLOWANCE, period=60)
     def get_day_data(self, date):
+        """Returns the energy data for one day
+        
+        Arguments:
+            date {datetime.date} -- The date to get data for
+        
+        Returns:
+            pd.Series -- The Energy data in a Series
+        """
         link = "{url}?apiKey={apikey}&type=day&date={year}-{month}-{day}"
         link = link.format(url=METEOCONTROL_API_URL, apikey=self.apikey,
                            year=date.year, month=date.month, day=date.day)
