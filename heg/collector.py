@@ -95,7 +95,10 @@ class Collector(object):
         return heg.meteocontrol.ProviderMeteoControl(username, apikey, name=name)
 
     def _provider_powerdog(self, project, plant):
-        pass
+        powerdog_id = plant['username']
+        apikey = project['apikey']
+        name = plant['name']
+        return heg.powerdog.ProviderPowerdog(powerdog_id, apikey, name=name)
 
     def _provider_pvscreen(self, project, plant):
         location = plant['username']

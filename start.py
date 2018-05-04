@@ -5,3 +5,4 @@ import sys
 
 if __name__ == '__main__':
     app = Collector(sys.argv[1:])
+    app.collect()

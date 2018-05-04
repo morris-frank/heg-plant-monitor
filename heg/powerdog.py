@@ -1,28 +1,36 @@
 from heg import provider
+from ratelimit import limits, sleep_and_retry
 import datetime
 import pandas as pd
 import xmlrpc.client
 
-# The URL for the Powerdog API
 POWERDOG_API_URL = "http://api.power-dog.eu:80/index.php"
-# How manny minutes between reported data?
 POWERDOG_FREQ = 5
+POWERDOG_ALLOWANCE = 60
 
 
 class ProviderPowerdog(provider.Provider):
-    def __init__(self, username, apikey, freq=POWERDOG_FREQ, **kwargs):
+    def __init__(self, powerdog_id, apikey, freq=POWERDOG_FREQ, **kwargs):
+        """
+        Arguments:
+            powerdog_id {string} -- The id of the powerdog
+            apikey {string} -- The apikey
+
+        Keyword Arguments:
+            freq {int} -- Frequency of datapoints (default: {POWERDOG_FREQ})
+            name {string} -- The name of this project
+        """
         super().__init__(freq, **kwargs)
-        self.username = username
+        self.powerdog_id = powerdog_id
         self.apikey = apikey
         self.client = xmlrpc.client.ServerProxy(POWERDOG_API_URL)
         self.powerdog_ids = None
         self.powerdog_inv = None
         self.powerdog_snum = None
-        self.freq = freq
+        self.load_powerdog_strings()
 
-    # Rate limit
     def load_powerdog_strings(self):
-        """[summary]
+        """Retrieve all Powerdog IDS, Inverters and number of strings for this apikey.
         """
         powerdogs = self.client.getPowerDogs(self.apikey)['powerdogs']
         self.powerdog_ids = []
@@ -40,41 +48,54 @@ class ProviderPowerdog(provider.Provider):
             self.powerdog_inv[id] = inverter_ids
             self.powerdog_snum[id] = inverter_snum
 
-    # Rate limit
-    def get_powerdog_data(self, id, date):
-        powerdog_series = pd.Series(index=self.time_range(date), name=id)
+    @sleep_and_retry
+    @limits(calls=POWERDOG_ALLOWANCE, period=60)
+    def get_day_data(self, date):
+        """Returns the energy data for one day
 
-        start_ts = int(date.timestamp())
+        Arguments:
+            date {datetime.date} -- The date to get data for
+
+        Returns:
+            pd.Series -- The Energy data in a Series
+        """
+        powerdog_series = pd.Series(
+            index=self.time_range(date), name=self.name)
+        powerdog_series = powerdog_series.fillna(0)
+
+        start_ts = int(datetime.datetime(
+            date.year, date.month, date.day).timestamp())
+        # Timezone aligning for dummies:
+        start_ts = start_ts - 2 * 60
         end_ts = start_ts + 86400 - 1
-        for inverter_id, n_string in zip(self.powerdog_inv[id], self.powerdog_snum[id]):
+        for inverter_id, n_string in zip(self.powerdog_inv[self.powerdog_id], self.powerdog_snum[self.powerdog_id]):
             for string_id in range(1, n_string + 1):
                 string_data = self.client.getStringData(
                     self.apikey, inverter_id, string_id, start_ts, end_ts)
                 df = self.process_string_data(string_data)
                 powerdog_series += df['PDC']
+
+        # Convert W to kW:
+        powerdog_series /= 1000
+        # Convert kW to kWh
+        # powerdog_series *= (self.freq / 60)
+
         return powerdog_series
 
     def process_string_data(self, string_data):
-        """[summary]
+        """Process the energy data of a string
 
         Arguments:
-            string_data {[type]} -- [description]
+            string_data {dict} -- The data for one string unchanged from the client
 
         Returns:
-            [type] -- [description]
+            pd.DataFrame -- The normalized and processed strings data in a DF
         """
         string_data = string_data['datasets']
         df = pd.DataFrame(string_data)
         df = df.T
+        df.index = df['TIMESTAMP_LOCAL']
         df.index = df.index.astype('int64')
         df = df.apply(pd.to_numeric, errors='ignore')
         df = self._reindex_day_data(df)
         return df
-
-    def get_day_data(self, date):
-        if self.powerdog_ids is None:
-            self.load_powerdog_strings()
-        data = []
-        for id in self.powerdog_ids:
-            data.append(self.get_powerdog_data(id, date))
-        return data

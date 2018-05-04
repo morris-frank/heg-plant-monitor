@@ -44,6 +44,7 @@ class ProviderMeteoControl(provider.Provider):
         response_json = response.json()['chartData']['data']
         df = pd.DataFrame(response_json)
         df = df.set_index(0)
+        # Milliseconds  to seconds Timestamp:
         df.index = df.index / 1000
         df = self._reindex_day_data(df)
         data = df[1]
