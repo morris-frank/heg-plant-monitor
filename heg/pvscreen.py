@@ -1,15 +1,15 @@
 from heg import provider
-import datetime
-import zeep
-import pandas as pd
 from ratelimit import limits, sleep_and_retry
+import datetime
+import pandas as pd
+import zeep
 
 # The URL for the pvScreen API
 PVSCREEN_API_URL = 'http://pvscreen.de/investor/SolarWebService?wsdl'
 # How manny minutes between reported data?
 PVSCREEEN_FREQ = 1440
 # How many calls per minute?
-PVSCREEN_ALLOWANCE = 30
+PVSCREEN_ALLOWANCE = 60
 
 
 class ProviderPVScreen(provider.Provider):

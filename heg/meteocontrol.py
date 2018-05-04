@@ -1,7 +1,7 @@
 from heg import provider
-import requests
-import pandas as pd
 from ratelimit import limits, sleep_and_retry
+import pandas as pd
+import requests
 
 # The URL for the Powerdog API
 METEOCONTROL_API_URL = "http://ws.meteocontrol.de/api/sites/ZDT8R/data/energygeneration/"

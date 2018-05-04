@@ -1,6 +1,6 @@
 from heg import provider
-import requests
 import pandas as pd
+import requests
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 

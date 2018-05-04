@@ -1,9 +1,10 @@
-import yaml
-import yamale
 import argparse
-import logging
-import heg.meteocontrol
 import datetime
+import heg
+import logging
+import multiprocessing as mp
+import yamale
+import yaml
 
 DEFAULT_CONFIG = 'config.yaml'
 
@@ -38,7 +39,8 @@ class Collector(object):
         if 'projects' not in self.config:
             logging.warn('No projects listed in config.')
         for project in self.config['projects']:
-            self.collect_project(project)
+            _project_process = mp.Process(target=self.collect_project, args=(project,))
+            _project_process.start()
 
     def collect_project(self, project):
         collector_functions = {

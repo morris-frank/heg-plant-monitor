@@ -1,6 +1,6 @@
 import datetime
-import unicodedata
 import re
+import unicodedata
 
 class Bunch(object):
     def __init__(self, adict):

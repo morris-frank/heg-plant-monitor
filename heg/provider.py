@@ -1,8 +1,8 @@
 from heg import utils
-import pandas as pd
 import datetime
-import os
 import logging
+import os
+import pandas as pd
 
 
 class Provider(object):
@@ -61,7 +61,6 @@ class Provider(object):
                 self.save_day_data(date)
 
     def save_day_data(self, date):
-        assert(isinstance(date, datetime.date))
         logging.debug(
             'Getting day data for {name} on the {date}'.format(name=self.name, date=date))
         data = self.get_day_data(date)
