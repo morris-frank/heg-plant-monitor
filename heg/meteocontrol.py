@@ -49,4 +49,6 @@ class ProviderMeteoControl(provider.Provider):
         df = self._reindex_day_data(df)
         data = df[1]
         data.name = self.name
+        # kW to kWh:
+        data *= self.freq / 60
         return data

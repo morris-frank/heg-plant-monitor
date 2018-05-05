@@ -78,7 +78,7 @@ class ProviderPowerdog(provider.Provider):
         # Convert W to kW:
         powerdog_series /= 1000
         # Convert kW to kWh
-        # powerdog_series *= (self.freq / 60)
+        powerdog_series *= self.freq / 60
 
         return powerdog_series
 

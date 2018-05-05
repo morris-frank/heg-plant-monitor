@@ -6,16 +6,18 @@ import pandas as pd
 
 
 class Provider(object):
-    def __init__(self, freq, name='unnamed'):
+    def __init__(self, freq, name='unnamed', size=None):
         """
         Arguments:
             freq {int} -- The frequency of datapoints
+            size {float} -- The size of this plant (kW_p)
         
         Keyword Arguments:
             name {str} -- The name for this plant (default: {'unnamed'})
         """
         self.freq = freq
         self.name = name
+        self.size = size
 
     def _reindex_day_data(self, df):
         """Normalize the data for a the set time_range.
@@ -103,6 +105,10 @@ class Provider(object):
             'Getting day data for {name} on the {date}'.format(name=self.name, date=date))
         data = self.get_day_data(date)
         self.save_data(data)
+
+    def augment_data(self, data):
+        return data
+        # if self.size:
 
     def save_data(self, data):
         """Saves the collected data to its determined export file path.

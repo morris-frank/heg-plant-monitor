@@ -104,3 +104,9 @@ class Collector(object):
         location = plant['username']
         name = plant['name']
         return heg.pvscreen.ProviderPVScreen(location, name=name)
+
+    def _provider_solarlog(self, project, plant):
+        username = plant['username']
+        password = project['apikey']
+        name = plant['name']
+        return heg.solarlog.ProviderSolarLog(username, password, name=name)
