@@ -4,21 +4,22 @@ import pandas as pd
 import ftplib
 
 # The URL for the SolarLog API
-SOLARLOG_API_URL = 'home9.solarlog-web.de'
+API = 'home9.solarlog-web.de'
 # How manny minutes between reported data?
-SOLARLOG_FREQ = 5
+FREQ = 5
 # How many calls per minute?
-SOLARLOG_ALLOWANCE = 60
-SOLARLOG_CACHE_FILE = '.solarlog.cache'
+ALLOWANCE = 60
+# The file to cache ftp requests in
+CACHE_FILE = '.solarlog.cache'
 
 
 class ProviderSolarLog(provider.Provider):
-    def __init__(self, username, password, freq=SOLARLOG_FREQ, **kwargs):
+    def __init__(self, username, password, freq=FREQ, **kwargs):
         """
         Arguments:
 
         Keyword Arguments:
-            freq {int} -- Frequency of datapoints (default: {SOLARLOG_FREQ})
+            freq {int} -- Frequency of datapoints (default: {FREQ})
             name {string} -- The name of this project
         """
         super().__init__(freq, **kwargs)
@@ -26,7 +27,7 @@ class ProviderSolarLog(provider.Provider):
         self.password = password
 
     @sleep_and_retry
-    @limits(calls=SOLARLOG_ALLOWANCE, period=60)
+    @limits(calls=ALLOWANCE, period=60)
     def get_day_data(self, date):
         """Returns the energy data for one day
 
@@ -40,15 +41,15 @@ class ProviderSolarLog(provider.Provider):
         remote_filename = 'min' + date.strftime('%y%m%d') + '.js'
 
         # Retrieve file for this day from ftp server:
-        ftp = ftplib.FTP(SOLARLOG_API_URL)
+        ftp = ftplib.FTP(API)
         ftp.login(user=self.username, passwd=self.password)
         ftp.retrbinary('RETR {}'.format(remote_filename),
-                       open(SOLARLOG_CACHE_FILE, 'wb').write)
+                       open(CACHE_FILE, 'wb').write)
         ftp.quit()
 
         # Parse file:
         data = []
-        with open(SOLARLOG_CACHE_FILE, 'r') as f:
+        with open(CACHE_FILE, 'r') as f:
             for line in f:
                 if len(line) < 10:
                     continue
@@ -67,7 +68,7 @@ class ProviderSolarLog(provider.Provider):
         # W to kW:
         df /= 1000
         # kW to kWh:
-        df *= SOLARLOG_FREQ / 60
+        df *= FREQ / 60
 
         series = df[1]
         series.name = self.name

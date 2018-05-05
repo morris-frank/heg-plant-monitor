@@ -5,29 +5,29 @@ import pandas as pd
 import zeep
 
 # The URL for the pvScreen API
-PVSCREEN_API_URL = 'http://pvscreen.de/investor/SolarWebService?wsdl'
+API = 'http://pvscreen.de/investor/SolarWebService?wsdl'
 # How manny minutes between reported data?
-PVSCREEN_FREQ = 1440
+FREQ = 1440
 # How many calls per minute?
-PVSCREEN_ALLOWANCE = 60
+ALLOWANCE = 60
 
 
 class ProviderPVScreen(provider.Provider):
-    def __init__(self, location, freq=PVSCREEN_FREQ, **kwargs):
+    def __init__(self, location, freq=FREQ, **kwargs):
         """
         Arguments:
             location {string} -- The Location (ID)
 
         Keyword Arguments:
-            freq {int} -- Frequency of datapoints (default: {PVSCREEN_FREQ})
+            freq {int} -- Frequency of datapoints (default: {FREQ})
             name {string} -- The name of this project
         """
         super().__init__(freq, **kwargs)
-        self.client = zeep.Client(wsdl=PVSCREEN_API_URL)
+        self.client = zeep.Client(wsdl=API)
         self.location = location
 
     @sleep_and_retry
-    @limits(calls=PVSCREEN_ALLOWANCE, period=60)
+    @limits(calls=ALLOWANCE, period=60)
     def get_day_data(self, date):
         """Returns the energy data for one day
 

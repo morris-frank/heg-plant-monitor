@@ -4,26 +4,26 @@ import datetime
 import pandas as pd
 import xmlrpc.client
 
-POWERDOG_API_URL = "http://api.power-dog.eu:80/index.php"
-POWERDOG_FREQ = 5
-POWERDOG_ALLOWANCE = 60
+API = "http://api.power-dog.eu:80/index.php"
+FREQ = 5
+ALLOWANCE = 60
 
 
 class ProviderPowerdog(provider.Provider):
-    def __init__(self, powerdog_id, apikey, freq=POWERDOG_FREQ, **kwargs):
+    def __init__(self, powerdog_id, apikey, freq=FREQ, **kwargs):
         """
         Arguments:
             powerdog_id {string} -- The id of the powerdog
             apikey {string} -- The apikey
 
         Keyword Arguments:
-            freq {int} -- Frequency of datapoints (default: {POWERDOG_FREQ})
+            freq {int} -- Frequency of datapoints (default: {FREQ})
             name {string} -- The name of this project
         """
         super().__init__(freq, **kwargs)
         self.powerdog_id = powerdog_id
         self.apikey = apikey
-        self.client = xmlrpc.client.ServerProxy(POWERDOG_API_URL)
+        self.client = xmlrpc.client.ServerProxy(API)
         self.powerdog_ids = None
         self.powerdog_inv = None
         self.powerdog_snum = None
@@ -49,7 +49,7 @@ class ProviderPowerdog(provider.Provider):
             self.powerdog_snum[id] = inverter_snum
 
     @sleep_and_retry
-    @limits(calls=POWERDOG_ALLOWANCE, period=60)
+    @limits(calls=ALLOWANCE, period=60)
     def get_day_data(self, date):
         """Returns the energy data for one day
 

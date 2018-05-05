@@ -4,7 +4,6 @@ import heg
 import logging
 import multiprocessing as mp
 import yamale
-import yaml
 
 DEFAULT_CONFIG = 'config.yaml'
 
@@ -79,7 +78,8 @@ class Collector(object):
             'meteocontrol': self._provider_meteocontrol,
             'powerdog': self._provider_powerdog,
             'pvscreen': self._provider_pvscreen,
-            'solarlog': self._provider_solarlog
+            'solarlog': self._provider_solarlog,
+            'discovergy': self._provider_discovergy
         }
 
         if project['provider'] not in collector_functions:
@@ -117,3 +117,9 @@ class Collector(object):
         password = project['apikey']
         name = plant['name']
         return heg.solarlog.ProviderSolarLog(username, password, name=name)
+
+    def _provider_discovergy(self, project, plant)
+        email = plant['username']
+        password = project['apikey']
+        name = plant['name']
+        return heg.discovergy.ProviderDiscovergy(email, password, name=name)
