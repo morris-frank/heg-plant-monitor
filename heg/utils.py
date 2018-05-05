@@ -1,5 +1,6 @@
 import datetime
 import re
+import sys
 import unicodedata
 
 
@@ -29,3 +30,42 @@ def slugify(value):
         'ascii', 'ignore').decode('ascii')
     value = re.sub(r'[^\w\s-]', '', value).strip().lower()
     return re.sub(r'[-\s]+', '_', value)
+
+
+def query_boolean(question, default='yes', defaulting=False):
+    """[summary]
+    
+    Arguments:
+        question {str} -- THe string to present to the user
+    
+    Keyword Arguments:
+        default {str} -- The default answer (default: {'yes'})
+        defaulting {bool} -- If true just pass along the default answer (default: {False})
+    
+    Returns:
+        bool -- THY ANTWOORD
+    """
+    valid = {'yes': True, 'y': True, 'ye': True, 'j': True, 'ja': True,
+             'no': False, 'n': False, 'nein': False}
+    if defaulting:
+        return valid[default]
+    if default is None:
+        prompt = ' (y/n) '
+    elif default == 'yes':
+        prompt = ' ([Y]/n) '
+    elif default == 'no':
+        prompt = ' (y/[N]) '
+    else:
+        raise ValueError('invalid default answer: {}'.format(default))
+    while True:
+        sys.stdout.write(question + prompt)
+        choice = input().lower()
+        if default is not None and choice == '':
+            print(default)
+            return valid[default]
+        elif choice in valid:
+            print(choice)
+            return valid[choice]
+        else:
+            print('Please respond with "yes" or "no" '
+                  '(or "y" or "n").')

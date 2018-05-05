@@ -1,7 +1,7 @@
-.venv/
-.vscode/
-.ipynb_checkpoints/
 config.yaml
 __pycache__/
 *.ignore
 export/
+.*
+*js
+*ipynb

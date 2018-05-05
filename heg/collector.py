@@ -30,6 +30,8 @@ class Collector(object):
             '-v', '--verbose', action='store_true', help='Make output more verbose.')
         parser.add_argument(
             '-f', '--force', '--overwrite', action='store_true', help='Overwrite all existing data.')
+        parser.add_argument('--no-mp', action='store_true',
+                            help='Don\'t do multiprocessing')
         parser.add_argument('-c', '--config', default=DEFAULT_CONFIG,
                             type=str, help='The config file to use.')
 
@@ -58,9 +60,13 @@ class Collector(object):
         if 'projects' not in self.config:
             logging.warn('No projects listed in config.')
         for project in self.config['projects']:
-            _project_process = mp.Process(
-                target=self.collect_project, args=(project,))
-            _project_process.start()
+            if self.args.no_mp:
+                if heg.utils.query_boolean('Collect {name}?'.format(name=project['name'])):
+                    self.collect_project(project)
+            else:
+                _project_process = mp.Process(
+                    target=self.collect_project, args=(project,))
+                _project_process.start()
 
     def collect_project(self, project):
         """Collect and save all the data for one project
@@ -72,7 +78,8 @@ class Collector(object):
             'auroraonline': self._provider_auroraonline,
             'meteocontrol': self._provider_meteocontrol,
             'powerdog': self._provider_powerdog,
-            'pvscreen': self._provider_pvscreen
+            'pvscreen': self._provider_pvscreen,
+            'solarlog': self._provider_solarlog
         }
 
         if project['provider'] not in collector_functions:

@@ -50,6 +50,8 @@ class ProviderSolarLog(provider.Provider):
         data = []
         with open(SOLARLOG_CACHE_FILE, 'r') as f:
             for line in f:
+                if len(line) < 10:
+                    continue
                 line = line[9:-2].split('|')
                 time = line[0]
                 energy = 0.0
@@ -60,7 +62,8 @@ class ProviderSolarLog(provider.Provider):
 
         df = pd.DataFrame(data)
         df = df.set_index(0)
-        df.index = pd.to_datetime(df.index)
+        df.index = pd.to_datetime(df.index, dayfirst=True)
+        df = self._reindex_day_data(df)
         # W to kW:
         df /= 1000
         # kW to kWh:
