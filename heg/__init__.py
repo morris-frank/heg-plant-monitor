@@ -5,3 +5,6 @@ import heg.powerdog
 import heg.pvscreen
 import heg.solarlog
 import heg.utils
+import colorama
+
+colorama.init()

@@ -37,6 +37,12 @@ class Provider(object):
         df = df.fillna(0)
         return df
 
+    def _empty_day_data(self, date):
+        series = pd.Series(
+            index=self.time_range(date), name=self.name)
+        series = series.fillna(0)
+        return series
+
     def time_range(self, date):
         """Generate the time range for a date with this providers freq
         

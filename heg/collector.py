@@ -4,6 +4,7 @@ import heg
 import logging
 import multiprocessing as mp
 import yamale
+from colorama import Fore
 
 DEFAULT_CONFIG = 'config.yaml'
 
@@ -89,10 +90,13 @@ class Collector(object):
         _collect = collector_functions[project['provider']]
         for plant in project['plants']:
             provider = _collect(project, plant)
+            print(Fore.RESET + 'Started plant ' + Fore.YELLOW +
+                  plant['name'] + Fore.RESET + ' of project ' + Fore.RED + project['name'])
             provider.save_range_data(
                 plant['start'], self.yesterday, self.args.force)
-            print('Finished plant {pl} of project {pr}'.format(
-                pl=plant.name, pr=project.name))
+            print(Fore.RESET + 'Finished project ' + Fore.YELLOW +
+                  plant['name'] + Fore.RESET + ' of project ' + Fore.RED + project['name'])
+        print(Fore.GREEN + 'Finished project ' + Fore.RED + project['name'])
 
     def _provider_auroraonline(self, project, plant):
         pass

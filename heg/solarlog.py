@@ -41,17 +41,20 @@ class ProviderSolarLog(provider.Provider):
         remote_filename = 'min' + date.strftime('%y%m%d') + '.js'
 
         # Retrieve file for this day from ftp server:
-        ftp = ftplib.FTP(API)
-        ftp.login(user=self.username, passwd=self.password)
-        ftp.retrbinary('RETR {}'.format(remote_filename),
-                       open(CACHE_FILE, 'wb').write)
-        ftp.quit()
+        try:
+            ftp = ftplib.FTP(API)
+            ftp.login(user=self.username, passwd=self.password)
+            ftp.retrbinary('RETR {}'.format(remote_filename),
+                        open(CACHE_FILE, 'wb').write)
+            ftp.quit()
+        except:
+            return self._empty_day_data(date)
 
         # Parse file:
         data = []
         with open(CACHE_FILE, 'r') as f:
             for line in f:
-                if len(line) < 10:
+                if len(line) < 50:
                     continue
                 line = line[9:-2].split('|')
                 time = line[0]
@@ -61,6 +64,8 @@ class ProviderSolarLog(provider.Provider):
                     energy += float(inv_energy)
                 data.append([time, energy])
 
+        if len(data) == 0:
+            return self._empty_day_data(date)
         df = pd.DataFrame(data)
         df = df.set_index(0)
         df.index = pd.to_datetime(df.index, dayfirst=True)

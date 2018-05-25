@@ -59,9 +59,7 @@ class ProviderPowerdog(provider.Provider):
         Returns:
             pd.Series -- The Energy data in a Series
         """
-        powerdog_series = pd.Series(
-            index=self.time_range(date), name=self.name)
-        powerdog_series = powerdog_series.fillna(0)
+        powerdog_series = self._empty_day_data(date)
 
         start_ts = int(datetime.datetime(
             date.year, date.month, date.day).timestamp())
