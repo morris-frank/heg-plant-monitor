@@ -4,8 +4,8 @@ import requests
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# The URL for the Powerdog API
-API = "https://auroraonline.abbsolarinverters.com/abb/"
+# The URL for the Powerdog HOST
+HOST = "https://auroraonline.abbsolarinverters.com/abb/"
 # How manny minutes between reported data?
 FREQ = 10
 
@@ -32,8 +32,8 @@ class ProviderAuroraOnline(provider.Provider):
         # }
         # session.headers.update(headers)
 
-        login_url = API + 'login.php'
-        datalogger_url = API + \
+        login_url = HOST + 'login.php'
+        datalogger_url = HOST + \
             'section.php?sn_datalogger={}'.format(datalogger)
 
         # YES! it is necassary that we walk the same path through the website as a natural user would do!

@@ -17,7 +17,7 @@ SECRET_FILE = '.discovergy_secret.yaml'
 
 
 class ProviderDiscovergy(provider.Provider):
-    def __init__(self, freq=FREQ, **kwargs):
+    def __init__(self, email, password, freq=FREQ, **kwargs):
         """
         Arguments:
 
@@ -26,6 +26,8 @@ class ProviderDiscovergy(provider.Provider):
             name {string} -- The name of this project
         """
         super().__init__(freq, **kwargs)
+        self.email = email
+        self.password = password
         self.load_client_secrets()
         self.register_session
 

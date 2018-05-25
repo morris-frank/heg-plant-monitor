@@ -91,6 +91,8 @@ class Collector(object):
             provider = _collect(project, plant)
             provider.save_range_data(
                 plant['start'], self.yesterday, self.args.force)
+            print('Finished plant {pl} of project {pr}'.format(
+                pl=plant.name, pr=project.name))
 
     def _provider_auroraonline(self, project, plant):
         pass
@@ -118,7 +120,7 @@ class Collector(object):
         name = plant['name']
         return heg.solarlog.ProviderSolarLog(username, password, name=name)
 
-    def _provider_discovergy(self, project, plant)
+    def _provider_discovergy(self, project, plant):
         email = plant['username']
         password = project['apikey']
         name = plant['name']

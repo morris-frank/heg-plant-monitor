@@ -73,7 +73,8 @@ class ProviderPowerdog(provider.Provider):
                 string_data = self.client.getStringData(
                     self.apikey, inverter_id, string_id, start_ts, end_ts)
                 df = self.process_string_data(string_data)
-                powerdog_series += df['PDC']
+                if df is not False:
+                    powerdog_series += df['PAC']
 
         # Convert W to kW:
         powerdog_series /= 1000
@@ -93,7 +94,10 @@ class ProviderPowerdog(provider.Provider):
         """
         string_data = string_data['datasets']
         df = pd.DataFrame(string_data)
-        df = df.T
+        if df.shape != (1,6):
+            df = df.T
+        if df.empty:
+            return False
         df.index = df['TIMESTAMP_LOCAL']
         df.index = df.index.astype('int64')
         df = df.apply(pd.to_numeric, errors='ignore')
