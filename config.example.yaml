@@ -1,0 +1,15 @@
+projects:
+  - name: 'Project Alpha'
+    provider: 'pvscreen'
+    apikey: ''
+    plants:
+      - name: 'Plant Nr.1'
+        username: 'user'
+        start: 2016-01-01
+        size: 12.12
+        compensation: 46.66
+      - name: 'Plant Nr.2'
+        username: 'user'
+        start: 2016-02-01
+        size: 40
+        compensation: 8
