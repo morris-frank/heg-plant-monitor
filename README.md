@@ -1,13 +1,29 @@
 # HEG Anlagendatenkollektor
 
-## Installation
+## Installation (_Windows_)
 
-1. Set up a Python virtual enviroment
-2. Activate the Virtual enviroment
-3. ```sh
+1. Install Python 3 and Git for Windows and open the MingW
+2. Install virtualenv
+    ```sh
+    pip.exe install virtualenv
+    ```
+3. Clone the Repo
+    ```sh
+    git clone https://github.com/morris-frank/heg-plant-monitor
+    ```
+4. Go into the folder of the repo and init the virtualenv:
+    ```sh
+    virtualenv.exe .venv
+    ``` 
+    And activate the virtualenv:
+    ```sh
+    source .venv/Scripts/activate
+    ```
+5. Install all dependencies:
+    ```sh
     pip install -r requirements.txt
     ```
-4. Setup `config.yaml` according to `config.schema.yaml`. An example is given in `config.example.yaml`.
+6. Setup `config.yaml` according to `config.schema.yaml`. An example is given in `config.example.yaml`.
 
 ## Running
 
