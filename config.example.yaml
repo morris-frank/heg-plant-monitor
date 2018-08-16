@@ -1,3 +1,4 @@
+aggr_export_path: '/qwertz/qwertz/'
 projects:
   - name: 'Project Alpha'
     provider: 'pvscreen'

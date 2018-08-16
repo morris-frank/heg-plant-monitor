@@ -6,11 +6,10 @@ import heg
 import heg.app
 import logging
 import multiprocessing as mp
-import os.path
+import os
 import pandas as pd
 
 EXPORT_DIR = './export'
-
 
 class Processor(heg.app.App):
     def __init__(self, arguments=[]):
@@ -35,7 +34,8 @@ class Processor(heg.app.App):
         plant_path = EXPORT_DIR + '/' + plant
         for year_path in glob(plant_path + '/*'):
             year = os.path.basename(year_path)
-            export_file = plant_path + '/' + year + '/weekly_data.csv'
+            export_file = self.config['aggr_export_path'] + '/' + plant + '/' + year + '/weekly_data.csv'
+            os.makedirs(os.path.dirname(export_file), exist_ok=True)
             if not overwrite and os.path.exists(export_file):
                 continue
             sums = {}

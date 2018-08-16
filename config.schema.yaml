@@ -1,3 +1,4 @@
+aggr_export_path: str()
 projects: list(include('project'))
 ---
 project:
