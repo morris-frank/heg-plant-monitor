@@ -50,12 +50,12 @@ class Collector(heg.app.App):
         for plant in project['plants']:
             provider = _collect(project, plant)
             print(Fore.RESET + 'Started plant ' + Fore.YELLOW +
-                  plant['name'] + Fore.RESET + ' of project ' + Fore.RED + project['name'])
+                  plant['name'] + Fore.RESET + ' of project ' + Fore.RED + project['name'] + Fore.RESET)
             provider.save_range_data(
                 plant['start'], self.yesterday, self.args.force)
             print(Fore.RESET + 'Finished project ' + Fore.YELLOW +
-                  plant['name'] + Fore.RESET + ' of project ' + Fore.RED + project['name'])
-        print(Fore.GREEN + 'Finished project ' + Fore.RED + project['name'])
+                  plant['name'] + Fore.RESET + ' of project ' + Fore.RED + project['name'] + Fore.RESET)
+        print(Fore.GREEN + 'Finished project ' + Fore.RED + project['name'] + Fore.RESET)
 
     def _provider_auroraonline(self, project, plant):
         pass

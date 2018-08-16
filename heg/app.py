@@ -1,6 +1,7 @@
 import argparse
 import datetime
 import logging
+import os.path
 import yamale
 
 DEFAULT_CONFIG = 'config.yaml'
@@ -17,7 +18,7 @@ class App(object):
         self.yesterday = datetime.date.today() - datetime.timedelta(days=1)
 
     def parse_arguments(self, arguments):
-        """Parses cli options/arguments given as a list. 
+        """Parses cli options/arguments given as a list.
 
         Arguments:
             arguments {list} -- The cli options/list
@@ -46,6 +47,12 @@ class App(object):
         Keyword Arguments:
             schemapath {str} -- The path to the schema file (default: {'config.schema.yaml'})
         """
+        if not os.path.isfile(schemapath):
+            print('Config schema file doesn\'t exist: {}'.format(schemapath))
+            return False
+        if not os.path.isfile(filepath):
+            print('Config file doesn\'t exist: {}'.format(filepath))
+            return False
         schema = yamale.make_schema(schemapath)
         data = yamale.make_data(filepath)
         data = yamale.validate(schema, data)

@@ -11,7 +11,7 @@ class Provider(object):
         Arguments:
             freq {int} -- The frequency of datapoints
             size {float} -- The size of this plant (kW_p)
-        
+
         Keyword Arguments:
             name {str} -- The name for this plant (default: {'unnamed'})
         """
@@ -45,10 +45,10 @@ class Provider(object):
 
     def time_range(self, date):
         """Generate the time range for a date with this providers freq
-        
+
         Arguments:
             date {datetime.date} -- The date
-        
+
         Returns:
             pd.date_range -- The computed time range
         """
@@ -59,10 +59,10 @@ class Provider(object):
 
     def get_day_data(self, date):
         """Returns the energy data for one day
-        
+
         Arguments:
             date {datetime.date} -- The date to get data for
-        
+
         Returns:
             pd.Series -- The Energy data in a Series
         """
@@ -71,27 +71,27 @@ class Provider(object):
 
     def save_path(self, date):
         """Returns the path to the file to save a dates data export to.
-        
+
         Arguments:
             date {datetime.date} -- The date
-        
+
         Returns:
             string -- The path
         """
         name_slug = utils.slugify(self.name)
-        dir_path = 'export/{name}/{year}/{month}/'.format(
+        dir_path = 'export/{name}/{year}/{month:02d}/'.format(
             name=name_slug, year=date.year, month=date.month)
-        filename = '{year}-{month}-{day}_{name}.csv'.format(
+        filename = '{year}-{month:02d}-{day:02d}_{name}.csv'.format(
             name=name_slug, year=date.year, month=date.month, day=date.day)
         return '{}{}'.format(dir_path, filename)
 
     def save_range_data(self, start_date, stop_date, overwrite=False):
         """Go from start_date to stop_date and collect and save the data for all dates.
-        
+
         Arguments:
             start_date {datetime.date} -- The first date
             stop_date {datetime.date} -- The last date
-        
+
         Keyword Arguments:
             overwrite {bool} -- Whether to overwrite existing files (default: {False})
         """
@@ -103,7 +103,7 @@ class Provider(object):
 
     def save_day_data(self, date):
         """Collect and save the data for this provider on the given date
-        
+
         Arguments:
             date {datetime.date} -- The date
         """
@@ -118,7 +118,7 @@ class Provider(object):
 
     def save_data(self, data):
         """Saves the collected data to its determined export file path.
-        
+
         Arguments:
             data {pd.Series} -- The collected data
         """
